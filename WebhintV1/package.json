@@ -1,0 +1,29 @@
+{
+  "name": "WebhintV1",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "scripts": {
+    "package": "npm run clean && npm run compile && tfx extension create --rev-version",
+    "clean": "rimraf ./*.vsix",
+    "compile": "tsc -p task",
+    "postinstall": "npm run install-task-lib && npm run compile",
+    "install-task-lib": "cd task && npm install"
+  },
+  "dependencies": {
+    "vss-web-extension-sdk": "^5.141.0"
+  },
+  "devDependencies": {
+    "@types/mocha": "^5.2.5",
+    "@types/node": "^8.0.7",
+    "mocha": "^5.2.0",
+    "rimraf": "^2.6.2",
+    "tfx-cli": "^0.6.3",
+    "ts-node": "^7.0.1",
+    "tslint": "^5.11.0",
+    "typescript": "^2.6.1"
+  }
+}
