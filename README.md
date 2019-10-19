@@ -11,28 +11,26 @@
 	- update Publisher Id (see below how to get publisher Id)
 	- Update version 
 
-4. Execute npm install in both folders:
-	- WebhintV1 
-	- WebhintV1/task
+4. Navigate to both folders (WebhintV1 and WebhintV1/task) and execute
+	> npm install
 
-5. Cd into WehintV1 folder and execute "
+5. Cd into WehintV1 folder and execute 
     > npm run compile
 
-6. Execute 
+6. Create Webhint Extension
     > "tfx extension create"
-   - File will be created in format 
-  
-        > &lt;publisher&gt;.&lt;name&gt;-&lt;version&gt;.vsix 
-	- Marketplace will not allow size greater than 1000 files (or assets)
-	- Remove node modules from vss-extension.json "files" attribute
-	- Update version number in vss-extension.json to a greater version (required) 
-	- Run the following command to create extension and upload new published file without node modules to marketplace (should allow)
-        > tfx extension create
-	- Add node modules back to vss-extension.json
-	- Update version number again in vss-extension.json to a greater version (required every update) 
-	- Recreate extension and update file in marketplace. 
-        > tfx extension create 
-    - NOTE: An update to the file in Marketplace will allow size greater than 1000 files. An initial upload will not allow such large sizes. 
+ - File will be created in format 
+    > &lt;publisher&gt;.&lt;name&gt;-&lt;version&gt;.vsix 
+- Marketplace will not allow size greater than 1000 files (or assets)
+- Remove node modules from vss-extension.json "files" attribute
+- Update version number in vss-extension.json to a greater version (required) 
+- Run the following command to create extension and upload new published file without node modules to marketplace (should allow)
+    > tfx extension create
+- Add node modules back to vss-extension.json
+- Update version number again in vss-extension.json to a greater version (required every update) 
+- Recreate extension and update file in marketplace. 
+    > tfx extension create 
+- NOTE: An update to the file in Marketplace will allow size greater than 1000 files. An initial upload will not allow such large sizes. 
      
             
 
