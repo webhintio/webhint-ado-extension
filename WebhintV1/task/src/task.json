@@ -1,0 +1,51 @@
+{
+  "id": "d2e2d33f-033e-456f-b77b-85b2309429c5",
+  "name": "Webhint",
+  "friendlyName": "Webhint",
+  "description": "Webhint",
+  "author": "Webhint",
+  "helpMarkDown": "Embed Webhint HTML results in Azure Pipelines. You need to provide your own installation of the npm package webhint.",
+  "category": "Utility",
+  "visibility": [
+    "Build",
+    "Release"
+  ],
+  "runsOn": [
+    "Agent",
+    "DeploymentGroup"
+  ],
+  "demands": [
+    "node.js"
+  ],
+  "version": {
+    "Major": "0",
+    "Minor": "9",
+    "Patch": "0"
+  },
+  "minimumAgentVersion": "1.95.0",
+  "instanceNameFormat": "Webhint $(url)",
+  "inputs": [
+    {
+      "name": "url",
+      "type": "string",
+      "label": "URL",
+      "defaultValue": "",
+      "required": true,
+      "helpMarkDown": "URL to execute Webhint against."
+    },
+    {
+      "name": "args",
+      "type": "multiLine",
+      "label": "CLI arguments",
+      "defaultValue": "",
+      "required": false,
+      "helpMarkDown": "[CLI arguments](https://webhint.io/docs/user-guide/) to pass to Webhint. One argument per line."
+    }
+  ],
+  "execution": {
+    "Node": {
+      "target": "execute-webhint.js",
+      "argumentFormat": ""
+    }
+  }
+}
