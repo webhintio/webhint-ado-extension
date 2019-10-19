@@ -9,7 +9,7 @@
   "scripts": {
     "package": "npm run clean && npm run compile && tfx extension create --rev-version",
     "clean": "rimraf ./*.vsix",
-    "compile": "tsc -p task",
+    "compile": "tsc -p task && tsc -p web",
     "postinstall": "npm run install-task-lib && npm run compile",
     "install-task-lib": "cd task && npm install"
   },

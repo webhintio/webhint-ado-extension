@@ -1,5 +1,5 @@
 {
-  "id": "d2e2d33f-033e-456f-b77b-85b2309429c5",
+  "id": "16efcb12-87e3-4bfb-a7cf-9cdd15b6aac2",
   "name": "Webhint",
   "friendlyName": "Webhint",
   "description": "Webhint",
@@ -19,8 +19,8 @@
   ],
   "version": {
     "Major": "0",
-    "Minor": "9",
-    "Patch": "0"
+    "Minor": "0",
+    "Patch": "1"
   },
   "minimumAgentVersion": "1.95.0",
   "instanceNameFormat": "Webhint $(url)",
