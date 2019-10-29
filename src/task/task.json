@@ -1,0 +1,66 @@
+{
+    "id": "12c1d9d0-f9f1-428a-9023-2ba3965a5178",
+    "name": "webhint",
+    "friendlyName": "webhint",
+    "description": "webhint",
+    "author": "webhint",
+    "helpMarkDown": "Embed webhint HTML results in Azure Pipelines. You need to provide your own installation of the npm package webhint.",
+    "category": "Utility",
+    "visibility": [
+        "Build",
+        "Release"
+    ],
+    "runsOn": [
+        "Agent",
+        "DeploymentGroup"
+    ],
+    "demands": [
+        "node.js"
+    ],
+    "version": {
+        "Major": "0",
+        "Minor": "0",
+        "Patch": "15"
+    },
+    "minimumAgentVersion": "1.95.0",
+    "instanceNameFormat": "webhint $(url)",
+    "inputs": [
+        {
+            "name": "url",
+            "type": "string",
+            "label": "URL",
+            "defaultValue": "",
+            "required": true,
+            "helpMarkDown": "URL to execute webhint against."
+        },
+        {
+            "name": "publishResults",
+            "type": "boolean",
+            "label": "Publish results",
+            "defaultValue": "true",
+            "required": true,
+            "helpMarkDown": "Publish the results of the run in a tab."
+        },
+        {
+            "name": "continueIfFailure",
+            "type": "boolean",
+            "label": "Continue on failure",
+            "defaultValue": "false",
+            "required": true,
+            "helpMarkDown": "Mark the task as successful even if webhint finds issues."
+        },
+        {
+            "name": "args",
+            "type": "multiLine",
+            "label": "CLI arguments",
+            "defaultValue": "",
+            "required": false,
+            "helpMarkDown": "[CLI arguments](https://webhint.io/docs/user-guide/) to pass to webhint. One argument per line."
+        }
+    ],
+    "execution": {
+        "Node10": {
+            "target": "execute-webhint.js"
+        }
+    }
+}

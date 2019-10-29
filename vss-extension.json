@@ -1,0 +1,49 @@
+{
+    "manifestVersion": 1,
+    "id": "webhint-devops",
+    "publisher": "webhint",
+    "version": "0.0.24",
+    "name": "webhint",
+    "description": "ADO extension for webhint",
+    "public": false,
+    "categories": [
+        "Azure Pipelines"
+    ],
+    "targets": [
+        {
+            "id": "Microsoft.VisualStudio.Services"
+        }
+    ],
+    "icons": {
+        "default": "dist/static/images/extension-logo.png"
+    },
+    "contributions": [
+        {
+            "id": "webhint-task",
+            "type": "ms.vss-distributed-task.task",
+            "targets": [
+                "ms.vss-distributed-task.tasks"
+            ],
+            "properties": {
+                "name": "tasks/webhint"
+            }
+        }
+    ],
+    "files": [
+        {
+            "path": "dist/static/images",
+            "packagePath": "images",
+            "addressable": true
+        },
+        {
+            "path": "dist/static/images/task-icon.png",
+            "packagePath": "tasks/webhint/icon.png",
+            "addressable": true
+        },
+        {
+            "path": "dist/task",
+            "packagePath": "tasks/webhint",
+            "addressable": true
+        }
+    ]
+}

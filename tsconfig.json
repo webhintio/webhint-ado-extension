@@ -1,0 +1,15 @@
+{
+    "compilerOptions": {
+        "allowJs": true,
+        "forceConsistentCasingInFileNames": true,
+        "inlineSourceMap": true,
+        "newLine": "lf",
+        "module": "commonjs",
+        "moduleResolution": "node",
+        "noUnusedLocals": true,
+        "outDir": "dist",
+        "strict": true,
+        "target": "esnext"
+    },
+    "include": ["src/task/*.ts"]
+}
