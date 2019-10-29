@@ -1,8 +1,8 @@
-import * as fs from "fs";
-import * as path from "path";
-import * as juice from "juice";
+import { existsSync, writeFileSync } from "fs";
+import { join } from "path";
+import { juiceFile } from "juice";
 
-import * as taskLibrary from "azure-pipelines-task-lib/task";
+import { command, getInput, getVariable, setResult, TaskResult, tool, which } from "azure-pipelines-task-lib/task";
 import { ToolRunner } from "azure-pipelines-task-lib/toolrunner";
 
 export class WebhintTask {
@@ -33,35 +33,35 @@ export class WebhintTask {
       await this.executeWebhint();
     } catch (err) {
       // return as task failed
-      taskLibrary.setResult(taskLibrary.TaskResult.Failed, err.message);
+      setResult(TaskResult.Failed, err.message);
     } finally {
       // upload HTML results file as artifact
-      if (fs.existsSync(this.htmlReportPath)) {
+      if (existsSync(this.htmlReportPath)) {
         await this.addWebhintHtmlAttachment();
-        taskLibrary.setResult(taskLibrary.TaskResult.Succeeded, "Published results as artifact.");
+        setResult(TaskResult.Succeeded, "Published results as artifact.");
       }
     }
   }
 
   private defineUrl() {
-    this.url = taskLibrary.getInput("url", true);
+    this.url = getInput("url", true);
   }
 
   private defineWorkingDirectory() {
-    const sourceDirectory = taskLibrary.getVariable("build.sourceDirectory") || taskLibrary.getVariable("build.sourcesDirectory");
-    this.workingDirectory = taskLibrary.getInput("cwd", false) || sourceDirectory;
+    const sourceDirectory = getVariable("build.sourceDirectory") || getVariable("build.sourcesDirectory");
+    this.workingDirectory = getInput("cwd", false) || sourceDirectory;
     if (!this.workingDirectory) {
       throw new Error("Working directory is not defined");
     }
   }
 
   private defineOutputReportPaths() {
-    this.htmlReportPath = path.join(this.workingDirectory,  WebhintTask.BASE_REPORT_PATH, `index.html`);
-    this.htmlReportInlinePath = path.join(this.workingDirectory,  WebhintTask.BASE_REPORT_PATH, `inline.html`);
+    this.htmlReportPath = join(this.workingDirectory, WebhintTask.BASE_REPORT_PATH, `index.html`);
+    this.htmlReportInlinePath = join(this.workingDirectory, WebhintTask.BASE_REPORT_PATH, `inline.html`);
   }
 
   private defineCliArgs() {
-    const argsStr = taskLibrary.getInput("args", false) || "";
+    const argsStr = getInput("args", false) || "";
 
     const illegalArgs = [
       "--output=",
@@ -77,16 +77,16 @@ export class WebhintTask {
 
     // create config file if a custom one is not provided
     if (args.filter(arg => arg.indexOf("-c=") == 0 || arg.indexOf("--config=") == 0).length == 0) {
-      const rcFile = path.join(this.workingDirectory,  ".hintrc");
+      const rcFile = join(this.workingDirectory, ".hintrc");
 
       // use web-recommended configuration
-      fs.writeFileSync(rcFile, "{ \"extends\": [\"web-recommended\"] }");
+      writeFileSync(rcFile, "{ \"extends\": [\"web-recommended\"] }");
     }
 
     args.push("--debug");
     args.push("--formatters=html");
     args.push("--tracking=off")
-    args.push(`--output=${path.join(this.workingDirectory, WebhintTask.BASE_REPORT_PATH)}`);
+    args.push(`--output=${join(this.workingDirectory, WebhintTask.BASE_REPORT_PATH)}`);
 
     args.unshift(this.url);
 
@@ -99,7 +99,7 @@ export class WebhintTask {
 
     execPath = this.getGlobalWebhintExecPath();
     if (execPath) {
-      this.command = taskLibrary.tool(execPath);
+      this.command = tool(execPath);
       this.command.arg(args);
       return;
     }
@@ -108,8 +108,8 @@ export class WebhintTask {
   }
 
   private getGlobalWebhintExecPath(): string {
-    const execPath = taskLibrary.which("hint", false);
-    return fs.existsSync(execPath) ? execPath : "";
+    const execPath = which("hint", false);
+    return existsSync(execPath) ? execPath : "";
   }
 
   private async executeWebhint() {
@@ -119,12 +119,12 @@ export class WebhintTask {
     };
     const retCode = await this.command.exec(<any>options);
 
-    if (!fs.existsSync(this.htmlReportPath)) {
+    if (!existsSync(this.htmlReportPath)) {
       throw new Error(`Webhint did not generate an HTML report. Error code: ${retCode}`);
     }
   }
 
-  private addWebhintHtmlAttachment() : Promise<void> {
+  private addWebhintHtmlAttachment(): Promise<void> {
     return new Promise((resolve, reject) => {
       const properties = {
         name: "webhintresult",
@@ -132,12 +132,12 @@ export class WebhintTask {
       };
 
       // inline styles using juice
-      juice.juiceFile(this.htmlReportPath, {}, (err, html) => {
-        if(err) {
+      juiceFile(this.htmlReportPath, {}, (err, html) => {
+        if (err) {
           reject(err);
         } else {
-          fs.writeFileSync(this.htmlReportInlinePath, html);
-          taskLibrary.command("task.addattachment", properties, this.htmlReportInlinePath);
+          writeFileSync(this.htmlReportInlinePath, html);
+          command("task.addattachment", properties, this.htmlReportInlinePath);
           resolve();
         }
       });

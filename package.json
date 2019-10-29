@@ -1,0 +1,31 @@
+{
+    "name": "webhint-ado-extension",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "keywords": [],
+    "author": "",
+    "license": "Apache-2.0",
+    "scripts": {
+        "package": "npm run clean && npm run build && tfx extension create --rev-version",
+        "clean": "rimraf dist",
+        "build": "webpack",
+        "create-extension": "tfx extension create --rev-version"
+    },
+    "dependencies": {
+        "vss-web-extension-sdk": "^5.141.0"
+    },
+    "devDependencies": {
+        "@types/node": "^12.11.7",
+        "azure-pipelines-task-lib": "^2.7.1",
+        "copy-webpack-plugin": "^5.0.4",
+        "fork-ts-checker-webpack-plugin": "^3.0.1",
+        "juice": "^5.2.0",
+        "rimraf": "^2.6.2",
+        "tfx-cli": "^0.6.3",
+        "ts-loader": "^6.2.1",
+        "typescript": "^3.6.4",
+        "webpack": "^4.41.2",
+        "webpack-cli": "^3.3.9"
+    }
+}

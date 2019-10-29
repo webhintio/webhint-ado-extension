@@ -1,10 +1,10 @@
 {
-  "id": "16efcb12-87e3-4bfb-a7cf-9cdd15b6aac2",
-  "name": "Webhint",
-  "friendlyName": "Webhint",
-  "description": "Webhint",
-  "author": "Webhint",
-  "helpMarkDown": "Embed Webhint HTML results in Azure Pipelines. You need to provide your own installation of the npm package webhint.",
+  "id": "12c1d9d0-f9f1-428a-9023-2ba3965a5178",
+  "name": "webhint",
+  "friendlyName": "webhint",
+  "description": "webhint",
+  "author": "webhint",
+  "helpMarkDown": "Embed webhint HTML results in Azure Pipelines. You need to provide your own installation of the npm package webhint.",
   "category": "Utility",
   "visibility": [
     "Build",
@@ -23,7 +23,7 @@
     "Patch": "1"
   },
   "minimumAgentVersion": "1.95.0",
-  "instanceNameFormat": "Webhint $(url)",
+  "instanceNameFormat": "webhint $(url)",
   "inputs": [
     {
       "name": "url",
@@ -31,7 +31,7 @@
       "label": "URL",
       "defaultValue": "",
       "required": true,
-      "helpMarkDown": "URL to execute Webhint against."
+      "helpMarkDown": "URL to execute webhint against."
     },
     {
       "name": "args",
@@ -39,7 +39,7 @@
       "label": "CLI arguments",
       "defaultValue": "",
       "required": false,
-      "helpMarkDown": "[CLI arguments](https://webhint.io/docs/user-guide/) to pass to Webhint. One argument per line."
+      "helpMarkDown": "[CLI arguments](https://webhint.io/docs/user-guide/) to pass to webhint. One argument per line."
     }
   ],
   "execution": {

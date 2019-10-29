@@ -1,0 +1,13 @@
+{
+    "compilerOptions": {
+        "forceConsistentCasingInFileNames": true,
+        "newLine": "lf",
+        "moduleResolution": "node",
+        "target": "esnext",
+        "outDir": "dist",
+        "types": [
+            "node"
+        ]
+    },
+    "include": ["src/task/*.ts"]
+}

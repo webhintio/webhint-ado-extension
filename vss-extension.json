@@ -1,10 +1,10 @@
 {
   "manifestVersion": 1,
   "id": "webhint-devops",
-  "publisher": "<publisher>",
-  "version": "1.0.1",
-  "name": "Webhint",
-  "description": "ADO extension for Webhint",
+  "publisher": "webhint",
+  "version": "0.0.4",
+  "name": "webhint",
+  "description": "ADO extension for webhint",
   "public": false,
   "categories": [
     "Azure Pipelines"
@@ -15,7 +15,7 @@
     }
   ],
   "icons": {
-    "default": "static/images/extension-logo.png"
+    "default": "dist/static/images/extension-logo.png"
   },
   "contributions": [
     {
@@ -25,49 +25,39 @@
         "ms.vss-distributed-task.tasks"
       ],
       "properties": {
-        "name": "Tasks/Webhint"
+        "name": "tasks/webhint"
       }
     }
   ],
   "files": [
     {
-      "path": "static/images/extension-logo.png",
+      "path": "dist/static/images/extension-logo.png",
       "packagePath": "images/extension-logo.png",
       "addressable": true
     },
     {
-      "path": "static/images/screenshot-1.png",
+      "path": "dist/static/images/screenshot-1.png",
       "packagePath": "images/screenshot-1.png",
       "addressable": true
     },
     {
-      "path": "static/images/screenshot-2.png",
+      "path": "dist/static/images/screenshot-2.png",
       "packagePath": "images/screenshot-2.png",
       "addressable": true
     },
     {
-      "path": "static/images/task-icon.png",
-      "packagePath": "Tasks/Webhint/icon.png",
+      "path": "dist/static/images/task-icon.png",
+      "packagePath": "tasks/webhint/icon.png",
       "addressable": true
     },
     {
-      "path": "task/src/task.json",
-      "packagePath": "Tasks/Webhint/task.json",
+      "path": "dist/task/task.json",
+      "packagePath": "tasks/webhint/task.json",
       "addressable": true
     },
     {
-      "path": "task/src/execute-webhint.js",
-      "packagePath": "Tasks/Webhint/execute-webhint.js",
-      "addressable": true
-    },
-    {
-      "path": "task/node_modules",
-      "packagePath": "Tasks/Webhint/node_modules",
-      "addressable": true
-    },
-    {
-      "path": "node_modules/vss-web-extension-sdk/lib",
-      "packagePath": "lib",
+      "path": "dist/task/execute-webhint.js",
+      "packagePath": "tasks/webhint/execute-webhint.js",
       "addressable": true
     }
   ],
@@ -75,16 +65,16 @@
     {
       "id": "build-webhint-tab",
       "type": "ms.vss-build-web.build-results-tab",
-      "description": "Embed Webhint HTML result into a build tab",
+      "description": "Embed webhint HTML result into a build tab",
       "targets": [
         "ms.vss-build-web.build-results-view"
       ],
       "properties": {
-        "name": "Webhint",
+        "name": "webhint",
         "uri": "tab-build.html",
         "registeredObjectId": "registeredEnvironmentObject",
         "supportsTasks": [
-          "16efcb12-87e3-4bfb-a7cf-9cdd15b6aac2"
+          "12c1d9d0-f9f1-428a-9023-2ba3965a5178"
         ],
         "dynamic": true
       },
@@ -95,16 +85,16 @@
     {
       "id": "release-stage-webhint-tab",
       "type": "ms.vss-web.tab",
-      "description": "Embed Webhint HTML result into a release stage tab",
+      "description": "Embed webhint HTML result into a release stage tab",
       "targets": [
         "ms.vss-releaseManagement-web.release-environment-editor-tab"
       ],
       "properties": {
-        "name": "Webhint",
+        "name": "webhint",
         "uri": "tab-release.html",
         "registeredObjectId": "registeredEnvironmentObject",
         "supportsTasks": [
-          "16efcb12-87e3-4bfb-a7cf-9cdd15b6aac2"
+          "12c1d9d0-f9f1-428a-9023-2ba3965a5178"
         ],
         "dynamic": true
       },
@@ -113,13 +103,13 @@
       ]
     },
     {
-      "id": "Webhint",
+      "id": "webhint",
       "type": "ms.vss-distributed-task.task",
       "targets": [
         "ms.vss-distributed-task.tasks"
       ],
       "properties": {
-        "name": "Tasks/Webhint"
+        "name": "tasks/webhint"
       }
     }
   ]
