@@ -1,148 +1,164 @@
-import { existsSync, writeFileSync } from "fs";
+import { exists } from "fs";
 import { join } from "path";
-import { juiceFile } from "juice";
+import { promisify } from "util";
 
-import { command, getInput, getVariable, setResult, TaskResult, tool, which } from "azure-pipelines-task-lib/task";
+// import { juiceFile as juiceFileCb } from "juice";
+
+import { getInput, getVariable, setResult, TaskResult, tool, which } from "azure-pipelines-task-lib/task";
 import { ToolRunner } from "azure-pipelines-task-lib/toolrunner";
 
-export class WebhintTask {
-  private static readonly BASE_REPORT_PATH = "webhintresult";
+const existsAsync = promisify(exists);
+// const juiceFile = promisify(juiceFileCb);
 
-  private url: string;
-  private workingDirectory: string;
-  private htmlReportPath: string;
-  private htmlReportInlinePath: string;
-  private cliArgs: string[];
+const BASE_REPORT_PATH = "webhintresult";
 
-  private command: ToolRunner;
+type ReportPaths = {
+    source: string;
+    destination: string;
+}
 
-  public async run() {
-    try {
-      // setup environment
-      this.defineWorkingDirectory();
-      this.defineOutputReportPaths();
+/** Returns the URL to analyze provided by the user. */
+const getUrl = (): string => {
+    const url = getInput("url", true);
 
-      // read inputs
-      this.defineUrl();
-      this.defineCliArgs();
-
-      // setup command
-      this.defineWebhintCommand();
-
-      // execute webhint
-      await this.executeWebhint();
-    } catch (err) {
-      // return as task failed
-      setResult(TaskResult.Failed, err.message);
-    } finally {
-      // upload HTML results file as artifact
-      if (existsSync(this.htmlReportPath)) {
-        await this.addWebhintHtmlAttachment();
-        setResult(TaskResult.Succeeded, "Published results as artifact.");
-      }
+    if (!url) {
+        throw new Error("URL to analyze is not defined");
     }
-  }
 
-  private defineUrl() {
-    this.url = getInput("url", true);
-  }
+    return url;
+};
 
-  private defineWorkingDirectory() {
+/** Returns the user provided working directory or the source directory if none defined. */
+const defineWorkingDirectory = () => {
     const sourceDirectory = getVariable("build.sourceDirectory") || getVariable("build.sourcesDirectory");
-    this.workingDirectory = getInput("cwd", false) || sourceDirectory;
-    if (!this.workingDirectory) {
-      throw new Error("Working directory is not defined");
+    const workingDirectory = process.cwd() || sourceDirectory;
+
+    if (!workingDirectory) {
+        throw new Error("Working directory is not defined");
     }
-  }
 
-  private defineOutputReportPaths() {
-    this.htmlReportPath = join(this.workingDirectory, WebhintTask.BASE_REPORT_PATH, `index.html`);
-    this.htmlReportInlinePath = join(this.workingDirectory, WebhintTask.BASE_REPORT_PATH, `inline.html`);
-  }
+    return workingDirectory;
+};
 
-  private defineCliArgs() {
+/** Returns the paths to the generated HTML report files. */
+const defineOutputReportPaths = (workingDirectory: string): ReportPaths => {
+    const source = join(workingDirectory, BASE_REPORT_PATH, `index.html`);
+    const destination = join(workingDirectory, BASE_REPORT_PATH, `inline.html`);
+
+    return { source, destination };
+};
+
+/**
+ * Returns the arguments to use by webhint in the cli and creates
+ * a temporary `.hintrc` file if needed.
+ */
+const defineCliArgs = (workingDirectory: string, url: string) => {
     const argsStr = getInput("args", false) || "";
 
     const illegalArgs = [
-      "--output=",
-      "--formatters",
-      "--tracking"
+        "--output=",
+        "--formatters",
+        "--tracking"
     ];
 
     const args = argsStr
-      .split(/\r?\n/)
-      .map((arg) => arg.trim())
-      .filter((arg) => arg.length > 0)
-      .filter((arg) => !illegalArgs.some((illegalArg) => arg.startsWith(illegalArg)));
+        .split(/\r?\n/)
+        .map((arg) => arg.trim())
+        .filter((arg) => arg.length > 0)
+        .filter((arg) => !illegalArgs.some((illegalArg) => arg.startsWith(illegalArg)));
 
-    // create config file if a custom one is not provided
-    if (args.filter(arg => arg.indexOf("-c=") == 0 || arg.indexOf("--config=") == 0).length == 0) {
-      const rcFile = join(this.workingDirectory, ".hintrc");
-
-      // use web-recommended configuration
-      writeFileSync(rcFile, "{ \"extends\": [\"web-recommended\"] }");
+    if ((getVariable("system.debug") || '').toLowerCase() === "true") {
+        args.push("--debug");
     }
 
-    args.push("--debug");
     args.push("--formatters=html");
     args.push("--tracking=off")
-    args.push(`--output=${join(this.workingDirectory, WebhintTask.BASE_REPORT_PATH)}`);
+    args.push(`--output=${join(workingDirectory, BASE_REPORT_PATH)}`);
 
-    args.unshift(this.url);
+    args.unshift(url);
 
-    this.cliArgs = args;
-  }
+    return args;
+};
 
-  private defineWebhintCommand() {
-    let execPath: string;
-    const args = this.cliArgs;
+const executeWebhint = async (workingDirectory: string, url: string) => {
+    const platform = process.platform;
+    const hintExecutable = platform === "win32" ?
+        'hint.cmd' :
+        'hint';
+    const localPath = join(process.cwd(), 'node_modules', '.bin', hintExecutable);
+    const installedLocally = await existsAsync(localPath);
+    const args = defineCliArgs(workingDirectory, url)
 
-    execPath = this.getGlobalWebhintExecPath();
-    if (execPath) {
-      this.command = tool(execPath);
-      this.command.arg(args);
-      return;
+    let cmd: ToolRunner;
+
+    if (installedLocally) {
+        console.log(`Hint installed locally in: "${localPath}"`);
+
+        cmd = tool(localPath);
+    } else {
+        // We run `hint` via npx because global installs cause problems
+        const npmPath = which("npx", true);
+
+        cmd = tool(npmPath);
+
+        /**
+         * The invocation is `npx hint URL --parameters`
+         * Only `URL --parameters` is available prior here.
+         */
+        args.unshift("hint");
+
+        console.warn(`Using "npx hint". This can take a bit.`);
+        console.warn(`For better performance please install hint locally: "npm install hint -save-dev"`);
     }
 
-    throw new Error('npm package "hint" is not installed globally or locally');
-  }
+    cmd.arg(args);
 
-  private getGlobalWebhintExecPath(): string {
-    const execPath = which("hint", false);
-    return existsSync(execPath) ? execPath : "";
-  }
+    const retCode = await cmd.exec();
 
-  private async executeWebhint() {
-    const options = {
-      ignoreReturnCode: true,
-      failOnStdErr: false
-    };
-    const retCode = await this.command.exec(<any>options);
+    return retCode;
+};
 
-    if (!existsSync(this.htmlReportPath)) {
-      throw new Error(`Webhint did not generate an HTML report. Error code: ${retCode}`);
-    }
-  }
+// const addWebhintHtmlAttachment = async (reportPaths: ReportPaths) => {
 
-  private addWebhintHtmlAttachment(): Promise<void> {
-    return new Promise((resolve, reject) => {
-      const properties = {
-        name: "webhintresult",
-        type: "webhint_html_result",
-      };
+//     const properties = {
+//         name: "webhintresult",
+//         type: "webhint_html_result",
+//     };
 
-      // inline styles using juice
-      juiceFile(this.htmlReportPath, {}, (err, html) => {
-        if (err) {
-          reject(err);
-        } else {
-          writeFileSync(this.htmlReportInlinePath, html);
-          command("task.addattachment", properties, this.htmlReportInlinePath);
-          resolve();
+//     // inline styles using juice
+//     const html = await juiceFile(reportPaths.source, {});
+
+//     await writeFileAsync(reportPaths.destination, html);
+//     command("task.addattachment", properties, reportPaths.destination);
+// };
+
+const run = async () => {
+
+    try {
+        // setup environment
+        const workingDirectory = defineWorkingDirectory();
+        console.log(`WorkingDirectory: ${workingDirectory}`)
+
+        const reportPaths = defineOutputReportPaths(workingDirectory);
+
+        // read inputs
+        const url = getUrl();
+        console.log(`URL: ${url}`);
+
+        // execute webhint
+        const retCode = await executeWebhint(workingDirectory, url);
+
+        if (!await existsAsync(reportPaths.source)) {
+            throw new Error(`Webhint did not generate an HTML report. Error code: ${retCode}`);
         }
-      });
-    });
-  }
-}
 
-new WebhintTask().run();
+        // await addWebhintHtmlAttachment(reportPaths);
+
+        // setResult(TaskResult.Succeeded, "Published results as artifact.");
+    } catch (err) {
+        // return as task failed
+        setResult(TaskResult.Failed, err.message);
+    }
+};
+
+run();

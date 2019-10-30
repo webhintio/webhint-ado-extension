@@ -1,51 +1,42 @@
 {
-  "id": "12c1d9d0-f9f1-428a-9023-2ba3965a5178",
-  "name": "webhint",
-  "friendlyName": "webhint",
-  "description": "webhint",
-  "author": "webhint",
-  "helpMarkDown": "Embed webhint HTML results in Azure Pipelines. You need to provide your own installation of the npm package webhint.",
-  "category": "Utility",
-  "visibility": [
-    "Build",
-    "Release"
-  ],
-  "runsOn": [
-    "Agent",
-    "DeploymentGroup"
-  ],
-  "demands": [
-    "node.js"
-  ],
-  "version": {
-    "Major": "0",
-    "Minor": "0",
-    "Patch": "1"
-  },
-  "minimumAgentVersion": "1.95.0",
-  "instanceNameFormat": "webhint $(url)",
-  "inputs": [
-    {
-      "name": "url",
-      "type": "string",
-      "label": "URL",
-      "defaultValue": "",
-      "required": true,
-      "helpMarkDown": "URL to execute webhint against."
+    "id": "12c1d9d0-f9f1-428a-9023-2ba3965a5178",
+    "name": "webhint",
+    "friendlyName": "webhint",
+    "description": "webhint",
+    "author": "webhint",
+    "helpMarkDown": "Embed webhint HTML results in Azure Pipelines. You need to provide your own installation of the npm package webhint.",
+    "category": "Utility",
+    "visibility": [
+        "Build",
+        "Release"
+    ],
+    "runsOn": [
+        "Agent",
+        "DeploymentGroup"
+    ],
+    "demands": [
+        "node.js"
+    ],
+    "version": {
+        "Major": "0",
+        "Minor": "0",
+        "Patch": "13"
     },
-    {
-      "name": "args",
-      "type": "multiLine",
-      "label": "CLI arguments",
-      "defaultValue": "",
-      "required": false,
-      "helpMarkDown": "[CLI arguments](https://webhint.io/docs/user-guide/) to pass to webhint. One argument per line."
+    "minimumAgentVersion": "1.95.0",
+    "instanceNameFormat": "webhint $(url)",
+    "inputs": [
+        {
+            "name": "url",
+            "type": "string",
+            "label": "URL",
+            "defaultValue": "",
+            "required": true,
+            "helpMarkDown": "URL to execute webhint against."
+        }
+    ],
+    "execution": {
+        "Node10": {
+            "target": "execute-webhint.js"
+        }
     }
-  ],
-  "execution": {
-    "Node": {
-      "target": "execute-webhint.js",
-      "argumentFormat": ""
-    }
-  }
 }
