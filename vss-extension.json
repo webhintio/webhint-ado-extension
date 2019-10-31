@@ -2,7 +2,7 @@
     "manifestVersion": 1,
     "id": "webhint-devops",
     "publisher": "webhint",
-    "version": "0.0.24",
+    "version": "0.0.25",
     "name": "webhint",
     "description": "ADO extension for webhint",
     "public": false,
