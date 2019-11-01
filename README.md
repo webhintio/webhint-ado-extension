@@ -73,3 +73,14 @@ to another GUID (and any references to the previous value).
 
    This command will run the commands above and automatically publish to the
    Marketplace.
+
+## Code of Conduct
+
+All projects in the `webhintio` organization follow this [CoC][coc]
+which adheres to the [OpenJS Foundation Code of Conduct][ojs coc].
+
+
+<!-- Link labels: -->
+
+[coc]: https://github.com/webhintio/.github/blob/master/CODE_OF_CONDUCT
+[ojs coc]: https://github.com/openjs-foundation/cross-project-council/blob/master/CODE_OF_CONDUCT.md
