@@ -82,5 +82,5 @@ which adheres to the [OpenJS Foundation Code of Conduct][ojs coc].
 
 <!-- Link labels: -->
 
-[coc]: https://github.com/webhintio/.github/blob/master/CODE_OF_CONDUCT
+[coc]: https://github.com/webhintio/.github/blob/main/CODE_OF_CONDUCT
 [ojs coc]: https://github.com/openjs-foundation/cross-project-council/blob/master/CODE_OF_CONDUCT.md
